@@ -2,6 +2,7 @@
 tasks:
   - init: |
       yarn global add @vue/cli
+      yarn global add surge
       cd ~
       git clone https://github.com/xx745/cellular-automaton-vuejs-2
       cd cellular-automaton-vuejs-2
