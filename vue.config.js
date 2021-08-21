@@ -1,3 +1,6 @@
 module.exports = {
-  lintOnSave: false
+  lintOnSave: false,
+  devServer: {
+    disableHostCheck: true // this let's you run the eapp
+  }
 }
