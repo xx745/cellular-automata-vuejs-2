@@ -1,24 +1,41 @@
 <template>
   <div id="app">
     <div class="header">
+      <div class="settings">
+        <label for="columns">Columns:</label>
+        <input
+          type="number"
+          name="columns"
+          v-model="COLS">
+        <label for="rows">Rows:</label>
+        <input
+          type="number"
+          name="rows"
+          v-model="ROWS">
+        <label for="speed">Speed (ms):</label>
+        <input
+          type="number"
+          name="speed"
+          v-model="SPEED">
+      </div>
       <button
         @click="toggleAutomation()">
-        {{ running ? 'stop' : 'start'}}
+        {{ running ? 'STOP' : 'START'}}
       </button>
       <button
         @click="generateGrid()">
-        generate grid
+        Generate grid
       </button>
       <button
-        @click="clearGrid()">
-        clear grid
+        @click="deleteGrid()">
+        Delete grid
       </button>
       <div>Status: {{ this.running }}</div>
     </div>
     <div
       class="grid"
       :style="{
-        'grid-template-columns': `repeat(${COLS}, ${cellHeight}px)`,
+        'grid-template-columns': `repeat(${COLS}, 15px)`,
         }">
       <div
         v-for="(row, rowIndex) in grid"
@@ -36,7 +53,6 @@
               : 'black'
           }"
           @click="toggleCellColour(rowIndex, collIndex)">
-          {{ grid[rowIndex][collIndex] }}
         </div>
       </div>
     </div>
@@ -50,29 +66,74 @@ export default {
     return {
       running: false,
       grid: [],
-      cellWidth: 20,
-      cellHeight: 20,
-      COLS: 10,
-      ROWS: 10
+      COLS: 20,
+      ROWS: 20,
+      operations: [
+        [0, 1],
+        [0, -1],
+        [1, -1],
+        [-1, 1],
+        [1, 1],
+        [-1, -1],
+        [1, 0],
+        [-1, 0]
+      ],
+      SPEED: 500
     }
   },
   methods: {
     toggleAutomation () {
-      this.running = !this.running
+      if (this.grid.length) {
+        this.running = !this.running
+        this.simulate()
+      }
     },
-    clearGrid () {
+    simulate () {
+      if (this.running) {
+        const newGrid = [...this.grid]
+
+        for (let i = 0; i < this.ROWS; i++) {
+          for (let j = 0; j < this.COLS; j++) {
+            let neighbours = 0
+            this.operations.forEach(([x, y]) => {
+              const ii = i + x // new row index
+              const jj = j + y // new column index
+
+              if (ii >= 0 && ii < this.ROWS && jj >= 0 && jj < this.COLS) {
+                neighbours += this.grid[ii][jj]
+              }
+            })
+
+            if (neighbours < 2 || neighbours > 3) {
+              newGrid[i][j] = 0
+            } else if (this.grid[i][j] === 0 && neighbours === 3) {
+              newGrid[i][j] = 1
+            }
+          }
+        }
+        this.grid = newGrid
+        setTimeout(this.simulate, this.SPEED)
+      }
+    },
+    deleteGrid () {
       this.grid = []
+      this.COLS = 20
+      this.ROWS = 20
+      this.SPEED = 500
     },
     toggleCellColour (row, col) {
       const newGrid = [...this.grid]
-      newGrid[row][col] = newGrid[row][col] ? 0 : 1
+      newGrid[row][col] = this.grid[row][col] ? 0 : 1
       this.grid = newGrid
     },
     generateGrid () {
       this.grid = []
 
       for (let i = 0; i < this.ROWS; i++) {
-        this.grid.push(Array.from(Array(this.COLS), () => 0))
+        this.grid[i] = []
+        for (let j = 0; j < this.COLS; j++) {
+          this.grid[i][j] = 0
+        }
       }
     }
   }
@@ -88,10 +149,24 @@ html, body {
   display: grid;
 }
 
+.settings {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+input {
+  width: 50px;
+}
+
+label {
+  float: right;
+}
+
 .cell {
   text-align: center;
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
   border: 1px solid black;
   cursor: pointer;
 }
