@@ -5,6 +5,7 @@ tasks:
       cd ~
       git clone https://github.com/xx745/cellular-automaton-vuejs-2
       cd cellular-automaton-vuejs-2
+      yarn install
 
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
 ports:
