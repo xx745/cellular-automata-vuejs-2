@@ -1,4 +1,7 @@
-# cellular-automaton-vuejs-2
+# Cellular Automaton built using Vue.js 2
+
+## You can use GitPod to start contributing
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/xx745/cellular-automaton-vuejs-2)
 
 ## Project setup
 ```
