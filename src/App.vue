@@ -54,6 +54,18 @@
           for="speed-500">500</label>
       </div>
 
+      <div class="settings">
+        <label
+          class="size"
+          for="size">Size:</label>
+        <input
+          type="number"
+          id="size"
+          v-model="SIZE"
+          :disabled="running"
+          @change="updateSize()">
+      </div>
+
       <div class="buttons">
         <button
           :class="running ? 'start' : 'stop'"
@@ -97,6 +109,7 @@ export default {
         [-1, 0]
       ],
       SPEED: 200,
+      SIZE: 20,
       ready: false
     }
   },
@@ -109,6 +122,11 @@ export default {
         this.running = !this.running
         this.simulate()
       }
+    },
+    updateSize () {
+      this.COLS = this.SIZE
+      this.ROWS = this.SIZE
+      this.generateGrid()
     },
     checkForLiveCells () {
       this.grid.forEach(row => {
@@ -229,6 +247,11 @@ h1 {
 
 input {
   margin-left: 1rem;
+}
+
+input#size {
+  width: 5rem;
+  padding: 0.25rem;
 }
 
 button {

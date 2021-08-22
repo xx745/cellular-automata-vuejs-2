@@ -5,10 +5,7 @@ image:
 tasks:
   - name: Install dependencies and start dev env
     init: yarn
-    # below will give access to 'surge' and 'vue' binaries
-    command: |
-      export PATH="$(yarn global bin):$PATH"
-      yarn serve
+    command: yarn serve
 
 # List the ports to expose. Learn more https://www.gitpod.io/docs/config-ports/
 ports:
