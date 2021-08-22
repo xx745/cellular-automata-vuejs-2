@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>Cellular Automation</h1>
+    <h1>Cellular Automata in Vue.js 2</h1>
     <div
       class="grid"
       :style="{
