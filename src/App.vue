@@ -68,7 +68,7 @@
 
       <div class="buttons">
         <button
-          :class="running ? 'start' : 'stop'"
+          :class="running ? 'stop' : 'start'"
           @click="toggleAutomation()">
           {{ running ? 'STOP' : 'START'}}
         </button>
@@ -85,6 +85,7 @@
       </div>
 
       <div>Status: {{ running ? 'running...' : 'stopped!' }}</div>
+      <div>Generation: {{ generation }}</div>
     </div>
   </div>
 </template>
@@ -110,7 +111,8 @@ export default {
       ],
       SPEED: 200,
       SIZE: 20,
-      ready: false
+      ready: false,
+      generation: 0
     }
   },
   mounted () {
@@ -164,12 +166,14 @@ export default {
         }
 
         this.grid = newGrid
+        this.generation += 1
 
         setTimeout(this.simulate, this.SPEED)
       }
     },
     emptyGrid () {
       this.ready = false
+      this.generation = 0
 
       if (!this.running) {
         this.grid = []
@@ -190,6 +194,8 @@ export default {
       }
     },
     generateGrid () {
+      this.generation = 0
+
       if (!this.running) {
         this.grid = []
         for (let i = 0; i < this.ROWS; i++) {
