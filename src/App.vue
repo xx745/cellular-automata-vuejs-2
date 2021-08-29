@@ -27,15 +27,6 @@
         <div for="speed">Speed (ms):</div>
         <input
           type="radio"
-          id="speed-100"
-          value="100"
-          v-model="SPEED"
-          :disabled="running">
-        <label
-          class="speed"
-          for="speed-100">100</label>
-        <input
-          type="radio"
           id="speed-200"
           value="200"
           v-model="SPEED"
@@ -52,6 +43,15 @@
         <label
           class="speed"
           for="speed-500">500</label>
+        <input
+          type="radio"
+          id="speed-1000"
+          value="1000"
+          v-model="SPEED"
+          :disabled="running">
+        <label
+          class="speed"
+          for="speed-1000">1000</label>
       </div>
 
       <div class="settings">
