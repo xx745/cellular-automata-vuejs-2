@@ -4,8 +4,8 @@
     <div
       class="grid"
       :style="{
-        'grid-template-columns': `repeat(${SIZE}, 10px)`,
-        'grid-template-rows': `repeat(${SIZE}, 10px)`,
+        'grid-template-columns': `repeat(${SIZE}, 6px)`,
+        'grid-template-rows': `repeat(${SIZE}, 6px)`,
         }">
       <div
         v-for="(row, rowIndex) in grid"
@@ -71,6 +71,7 @@
       <div class="buttons">
         <button
           :class="running ? 'stop' : 'start'"
+          :disabled="!ready"
           @click="toggleAutomation()">
           {{ running ? 'STOP' : 'START'}}
         </button>
@@ -99,8 +100,8 @@ export default {
     return {
       running: false,
       grid: [],
-      COLS: 20,
-      ROWS: 20,
+      COLS: 40,
+      ROWS: 40,
       /**
        * All possible positions of cell's neighbours
        * |o|o|o|
@@ -122,7 +123,7 @@ export default {
         [1, 1]
       ],
       SPEED: 200,
-      SIZE: 20,
+      SIZE: 40,
       ready: false,
       generation: 0
     }
@@ -143,13 +144,15 @@ export default {
       this.seedGrid()
     },
     checkForLiveCells () {
-      this.grid.forEach(row => {
-        row.forEach(cell => {
-          if (cell === 1) {
-            this.ready = true
-          }
-        })
-      })
+      for (let i = 0; i < this.grid.length; i++) {
+        const row = this.grid[i]
+        if (row.some(col => col)) {
+          this.ready = true
+          break
+        } else {
+          this.ready = false
+        }
+      }
     },
     simulate () {
       if (this.running) {
@@ -184,10 +187,11 @@ export default {
       }
     },
     emptyGrid () {
+      this.ready = false
+
       if (!this.running) {
         this.generation = 0
         this.grid = this.generateGrid(false)
-        this.ready = true
       }
     },
     toggleCell (row, col) {
@@ -195,8 +199,9 @@ export default {
         const newGrid = [...this.grid]
         newGrid[row][col] = this.grid[row][col] ? 0 : 1
         this.grid = newGrid
-        this.checkForLiveCells()
       }
+
+      this.checkForLiveCells()
     },
     randomNumber () {
       return Math.floor(Math.random() * 2)
@@ -307,7 +312,6 @@ button:hover, button:focus, button:active {
 .cell {
   width: 100%;
   height: 100%;
-  border: 1px solid rgb(60, 60, 60);
   background-color: rgb(255, 255, 255);
   cursor: pointer;
 }
