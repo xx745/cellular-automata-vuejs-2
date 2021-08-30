@@ -4,11 +4,13 @@
     <div
       class="grid"
       :style="{
-        'grid-template-columns': `repeat(${COLS}, 11px)`,
+        'grid-template-columns': `repeat(${SIZE}, 10px)`,
+        'grid-template-rows': `repeat(${SIZE}, 10px)`,
         }">
       <div
         v-for="(row, rowIndex) in grid"
-        :key="`row-${rowIndex}`">
+        :key="`row-${rowIndex}`"
+        class="row">
         <div
           v-for="(cell, collIndex) in row"
           :key="`cell-${collIndex}`"
@@ -74,8 +76,8 @@
         </button>
         <button
           :disabled="running"
-          @click="generateGrid()">
-          Generate grid
+          @click="seedGrid()">
+          Seed grid
         </button>
         <button
           :disabled="running"
@@ -99,15 +101,25 @@ export default {
       grid: [],
       COLS: 20,
       ROWS: 20,
+      /**
+       * All possible positions of cell's neighbours
+       * |o|o|o|
+       * |o|x|o|
+       * |o|o|o|
+       */
       operations: [
-        [0, 1],
-        [0, -1],
-        [1, -1],
-        [-1, 1],
-        [1, 1],
+        // top row
         [-1, -1],
+        [-1, 0],
+        [-1, 1],
+        // middle row
+        [0, -1],
+        // [0, 0] - this is the position of out cell
+        [0, 1],
+        // bottom row
+        [1, -1],
         [1, 0],
-        [-1, 0]
+        [1, 1]
       ],
       SPEED: 200,
       SIZE: 20,
@@ -116,7 +128,7 @@ export default {
     }
   },
   mounted () {
-    this.generateGrid()
+    this.seedGrid()
   },
   methods: {
     toggleAutomation () {
@@ -128,7 +140,7 @@ export default {
     updateSize () {
       this.COLS = this.SIZE
       this.ROWS = this.SIZE
-      this.generateGrid()
+      this.seedGrid()
     },
     checkForLiveCells () {
       this.grid.forEach(row => {
@@ -141,26 +153,26 @@ export default {
     },
     simulate () {
       if (this.running) {
-        const newGrid = [...this.grid]
+        const newGrid = this.grid.map(row => [...row]) // shallow clone, works in this case
 
-        for (let i = 0; i < this.ROWS; i++) {
-          for (let j = 0; j < this.COLS; j++) {
+        for (let row = 0; row < this.ROWS; row++) {
+          for (let col = 0; col < this.COLS; col++) {
             let neighbours = 0
 
             for (let k = 0; k < this.operations.length; k++) {
               const [x, y] = this.operations[k]
-              const newI = i + x
-              const newJ = j + y
+              const newRow = row + x
+              const newCol = col + y
 
-              if (newI >= 0 && newI < this.ROWS && newJ >= 0 && newJ < this.COLS) {
-                neighbours += this.grid[newI][newJ]
+              if (newRow >= 0 && newRow < this.ROWS && newCol >= 0 && newCol < this.COLS) {
+                neighbours += this.grid[newRow][newCol]
               }
             }
 
             if (neighbours < 2 || neighbours > 3) {
-              newGrid[i][j] = 0
-            } else if (this.grid[i][j] === 0 && neighbours === 3) {
-              newGrid[i][j] = 1
+              newGrid[row][col] = 0
+            } else if (!this.grid[row][col] && neighbours === 3) {
+              newGrid[row][col] = 1
             }
           }
         }
@@ -172,17 +184,10 @@ export default {
       }
     },
     emptyGrid () {
-      this.ready = false
-      this.generation = 0
-
       if (!this.running) {
-        this.grid = []
-        for (let i = 0; i < this.ROWS; i++) {
-          this.grid[i] = []
-          for (let j = 0; j < this.COLS; j++) {
-            this.grid[i][j] = 0
-          }
-        }
+        this.generation = 0
+        this.grid = this.generateGrid(false)
+        this.ready = true
       }
     },
     toggleCell (row, col) {
@@ -193,20 +198,27 @@ export default {
         this.checkForLiveCells()
       }
     },
-    generateGrid () {
-      this.generation = 0
+    randomNumber () {
+      return Math.floor(Math.random() * 2)
+    },
+    generateGrid (fill = true) {
+      const grid = []
 
-      if (!this.running) {
-        this.grid = []
-        for (let i = 0; i < this.ROWS; i++) {
-          this.grid[i] = []
-          for (let j = 0; j < this.COLS; j++) {
-            this.grid[i][j] = Math.floor(Math.random() * 2)
-          }
+      for (let row = 0; row < this.ROWS; row++) {
+        grid[row] = []
+        for (let col = 0; col < this.COLS; col++) {
+          grid[row][col] = fill ? this.randomNumber() : 0
         }
       }
 
-      this.ready = true
+      return grid
+    },
+    seedGrid () {
+      if (!this.running) {
+        this.generation = 0
+        this.grid = this.generateGrid()
+        this.ready = true
+      }
     }
   }
 }
@@ -214,12 +226,15 @@ export default {
 
 <style>
 html, body {
+  margin: 0;
+  height: 100%;
   background-color: lightgoldenrodyellow;
   font-size: 14px;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 #app {
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -290,10 +305,10 @@ button:hover, button:focus, button:active {
 }
 
 .cell {
-  text-align: center;
-  width: 10px;
-  height: 10px;
-  border: 1px solid rgb(80, 80, 80);
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgb(60, 60, 60);
+  background-color: rgb(255, 255, 255);
   cursor: pointer;
 }
 </style>
