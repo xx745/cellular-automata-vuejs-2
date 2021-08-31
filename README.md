@@ -5,7 +5,7 @@
 ## You can use GitPod to start contributing
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/xx745/cellular-automaton-vuejs-2)
 
-## Using globally installed Yarn packages
+## Using globally installed Yarn packages (if it doesn't work from start)
 ```
 export PATH="$(yarn global bin):$PATH"
 ```
